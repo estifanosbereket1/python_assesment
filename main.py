@@ -6,7 +6,12 @@ from typing import List, Dict
 
 
 class TableParser(HTMLParser):
-   
+    """
+    Parses an HTML table containing x, character, and y coordinates.
+
+    Builds a list of dictionaries like:
+    [{"x": 0, "char": "█", "y": 0}, {"x": 1, "char": "▀", "y": 2}, ...]
+    """
 
     def __init__(self):
         super().__init__()
@@ -43,7 +48,12 @@ class TableParser(HTMLParser):
                 except ValueError:
                     # Skip invalid rows or headers
                     pass
+"""
+    Parse command-line arguments.
 
+    Returns:
+        argparse.Namespace: Parsed arguments containing the URL.
+ """
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="ASCII Art Parser")
@@ -52,16 +62,48 @@ def parse_args() -> argparse.Namespace:
 
 
 def fetch_html(url: str, timeout: float = 10.0) -> str:
+    """
+    Fetch HTML content from a URL.
+
+    Args:
+        url (str): The URL to fetch.
+        timeout (float): Request timeout in seconds.
+
+    Returns:
+        str: HTML response text.
+
+    Exits the program on any request/HTTP-related error.
+    """
     try:
         resp = requests.get(url, timeout=timeout)
+       
         resp.raise_for_status()
         return resp.text
     except requests.RequestException as exc:
         print(f"Error fetching URL '{url}': {exc}", file=sys.stderr)
         sys.exit(1)
+    except Exception as exc:
+        print(f"Unexpected error fetching URL '{url}': {exc}", file=sys.stderr)
+        sys.exit(1)
+
 
 
 def build_canvas_from_rows(rows: List[Dict[str, object]]) -> List[str]:
+    """
+    Convert parsed coordinate rows into an ASCII art canvas.
+
+    Steps:
+      1. Find min/max x and y to calculate canvas size.
+      2. Create an empty 2D list.
+      3. Map each (x, y) coordinate to a position in the list.
+      4. Convert the 2D list into printable strings.
+
+    Args:
+        rows (List[Dict[str, object]]): Parsed coordinate data.
+
+    Returns:
+        List[str]: Lines of ASCII art.
+    """
     if not rows:
         return []
 
@@ -90,6 +132,10 @@ def build_canvas_from_rows(rows: List[Dict[str, object]]) -> List[str]:
 
 
 def main() -> None:
+    """
+    Main entry point.
+    Fetches HTML, parses the table, builds ASCII art, and prints it.
+    """
     args = parse_args()
     html = fetch_html(args.url)
 

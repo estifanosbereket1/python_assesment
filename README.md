@@ -1,45 +1,80 @@
-# ASCII Art Parser - Explanation
+# ASCII Art Parser
 
-This script takes a URL that has an HTML table with x, char, and y columns, then turns it into ASCII art printed in the terminal.
-
----
-
-## How it works
-
-1. **Import required modules and libraries**
-   It uses `HTMLParser` to read HTML, `requests` to get the web page, and `argparse` to handle command-line inputs.
-
-2. **TableParser class**
-   This class goes through the HTML tags. When it finds `<td>` tags, it reads the text inside and stores it.
-   When a row `<tr>` is done and has exactly 3 columns (x, char, y), it saves that as one data point.
-
-3. **Getting the HTML**
-   `fetch_html()` downloads the page. If it fails, it shows an error and stops.
-
-4. **Making the canvas**
-   `build_canvas_from_rows()` looks at all the x and y values to figure out how big the art should be.
-   It creates a grid filled with a chosen fill character (default is a space). Then it places each `char` at the correct position.
-
-5. **Main function**
-
-   * Reads the `-url`
-   * Fetches the HTML.
-   * Parses it with `TableParser` a custom class which inherits from `HTMLParsre` and overides the three methods.
-   * Builds and prints the ASCII art.
+This project parses an HTML table containing `x`, `char`, and `y` columns, and converts it into ASCII art printed in the terminal.
 
 ---
 
-## Example
+## Overview
+
+The program fetches a web page, extracts table data, and maps characters to coordinates on a grid to form ASCII art.
+
+---
+
+## Libraries and Modules Used
+
+1. **`html.parser.HTMLParser`**  
+   Used for parsing HTML and extracting data from `<table>` rows.
+
+2. **`requests`**  
+   Handles HTTP requests to fetch the web page content.
+
+3. **`argparse`**  
+   Manages command-line arguments like the input URL.
+
+4. **`unittest` and `unittest.mock`**  
+   Used for automated testing, including mocking network requests.
+
+---
+
+## Main Components
+
+### **1. TableParser class**
+- Inherits from `HTMLParser`.  
+- Detects `<tr>` and `<td>` elements.  
+- Collects data for each table row.  
+- When a row has three valid cells (`x`, `char`, `y`), it adds it to the `rows` list.
+
+### **2. fetch_html(url)**
+- Downloads the given web page.
+- Handles network errors and invalid responses.
+- Exits gracefully if a problem occurs.
+
+### **3. build_canvas_from_rows(rows)**
+- Calculates the canvas boundaries from all x/y coordinates.
+- Creates a text grid (filled with spaces).
+- Places each character on its corresponding (x, y) position.
+- Returns a list of strings representing the ASCII art.
+
+### **4. main()**
+- Reads the `-url` command-line argument.
+- Fetches and parses the HTML using `TableParser`.
+- Builds and prints the ASCII art to the terminal.
+
+---
+
+## Main File
+**Main function** * Reads the -url * Fetches the HTML. * Parses it with TableParser a custom class which inherits from HTMLParsre and overides the three methods. * Builds and prints the ASCII art. 
+--- 
+
+## Example 
 
 ### Linux based Os(mine)
-
-```bash
-python3 main.py -url "https://example.com/ascii_table.html" 
-```
+bash
+python3 main.py -url "https://example.com/ascii_table.html"
 
 ### Windows
+bash
+python main.py -url "https://example.com/ascii_table
 
+---
+
+## Running Tests
+
+Tests are included in **`test.py`** and cover:
+- Table parsing behavior  
+- Canvas building logic  
+- Network fetching and error handling  
+
+### Run all tests
 ```bash
-python main.py -url "https://example.com/ascii_table.html"
-
-![alt text](assesment.png)
+python3 -m unittest test.py
